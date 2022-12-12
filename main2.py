@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 from sklearn import linear_model
 import locale 
 import time
-import xlsxwriter
-import re
 import sys
 from streamlit.web import cli as stcli
 
