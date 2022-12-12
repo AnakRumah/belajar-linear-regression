@@ -6,14 +6,16 @@ from sklearn import linear_model
 import locale 
 import time
 import sys
+import babel
 from streamlit.web import cli as stcli
+from babel.numbers import format_currency
 
 
 def main():
     
 
     data_frame = pd.read_excel("DATA RUMAH.xlsx", usecols=['HARGA','LB','LT','KM','KT'])
-    locale.setlocale( locale.LC_ALL, 'IND' )
+#     locale.setlocale( locale.LC_ALL, 'IND' )
 
     st.title("Linear Regression")
     st.subheader("Contoh Linear Regression mendeteksi harga rumah")
@@ -42,9 +44,10 @@ def main():
     predict_value = reg_model.predict([[lb_user,lt_user,km_user,kt_user]])
     predict_value = predict_value.reshape(1,-1)
     predict_value = round(predict_value[0][0],0)
-    # predict_value = 
-    new = locale.currency( predict_value, grouping=True)
-
+    # predict_value = format_currency(100, 'Rp', locale='en_US'))
+    
+#     new = locale.currency( predict_value, grouping=True)
+    new = format_currency(predict_value,'Rp. ', locale='en_US')
 
     if st.button('Hitung Harga Prediksi'):
         with st.spinner('Wait for it...'):
