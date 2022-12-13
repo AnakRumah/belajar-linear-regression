@@ -22,7 +22,6 @@ def main():
     st.caption("Dengan rumus") 
     st.latex("y= ax + b")
     
-    @st.cache
     st.caption("Kita memiliki data sebagai berikut : ")
     st.dataframe(data_frame.head(10))
     st.text("Data Rumah hanya ditampilkan sebagian untuk melihat keseluruhan data kamu bisa mencari datasetnya di kaggle")
