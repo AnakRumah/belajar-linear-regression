@@ -1,2 +1,2 @@
-import locale
-locale.setlocale(locale.LC_ALL, "IND")
+#import locale
+#locale.setlocale(locale.LC_ALL, "IND")
