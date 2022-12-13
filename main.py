@@ -77,10 +77,10 @@ def main():
 
     st.header('')
     st.subheader("Lakukan prediksi harga rumah")
-    lb_input = st.number_input("Masukkan Luas Bangunan :", min_value=50, max_value=1000, step=10)
-    lt_input = st.number_input("Masukkan Luas Tanah :", min_value=50, max_value=1000, step=10)
-    km_input = st.number_input("Masukkan Jumlah Kamar Tidur :", min_value=1, max_value=10, step=1)
-    kt_input = st.number_input("Masukkan Jumlah Kamar Mandi :", min_value=1, max_value=10, step=1)
+    lb_input = st.number_input("Masukkan Luas Bangunan (m2):", min_value=50, max_value=2000, step=10)
+    lt_input = st.number_input("Masukkan Luas Tanah (m2):", min_value=50, max_value=2000, step=10)
+    km_input = st.number_input("Masukkan Jumlah Kamar Tidur :", min_value=1, max_value=20, step=1)
+    kt_input = st.number_input("Masukkan Jumlah Kamar Mandi :", min_value=1, max_value=20, step=1)
 
     
 
