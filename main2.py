@@ -71,7 +71,6 @@ def main():
     'Tampilkan Grafik hubungan antara Harga dengan ?',
     ('Luas Bangunan', 'Luas Tanah', 'Jumlah Kamar Tidur', 'Jumlah Kamar Mandi'))
     st.write('Menampilkan Grafik hubungan antara Harga dengan', option)
-
     
     fig = load_figure(dataset,option)
     st.pyplot(fig)
