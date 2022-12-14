@@ -4,8 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 import locale 
-import time
-import sys
 import babel
 from streamlit.web import cli as stcli
 from babel.numbers import format_currency
@@ -81,10 +79,6 @@ def main():
     lt_input = st.number_input("Masukkan Luas Tanah (m2):", min_value=50, max_value=2000, step=10)
     km_input = st.number_input("Masukkan Jumlah Kamar Tidur :", min_value=1, max_value=20, step=1)
     kt_input = st.number_input("Masukkan Jumlah Kamar Mandi :", min_value=1, max_value=20, step=1)
-
-    
-
-    
 
     if st.button('Hitung Harga Prediksi'):
         predict_price = predict(reg_model, lb_input, lt_input, km_input, kt_input)
