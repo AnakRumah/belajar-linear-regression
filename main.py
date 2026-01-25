@@ -1,97 +1,136 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn import linear_model
-import locale 
-import babel
-from streamlit.web import cli as stcli
-from babel.numbers import format_currency
 import time
+import pandas as pd
 import seaborn as sns
+import streamlit as st
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from babel.numbers import format_currency
 
-@st.cache
-def load_dataset():
-    raw_dataset = pd.read_excel('DATA RUMAH.xlsx', usecols=['HARGA','LB','LT','KT','KM'])
-    dataset = raw_dataset.copy()
+# Configuration
+st.set_page_config(
+    page_title="Prediksi Harga Rumah",
+    page_icon="🏠",
+    layout="centered"
+)
 
-    dataset = dataset.rename(columns={'HARGA':'Harga','LB':'Luas Bangunan','LT':'Luas Tanah','KT':'Jumlah Kamar Tidur','KM':'Jumlah Kamar Mandi'})
+@st.cache_data
+def load_dataset() -> pd.DataFrame:
+    """
+    Loads and preprocesses the housing dataset.
+    """
+    try:
+        raw_dataset = pd.read_excel('DATA RUMAH.xlsx', usecols=['HARGA', 'LB', 'LT', 'KT', 'KM'])
+        dataset = raw_dataset.rename(columns={
+            'HARGA': 'Harga',
+            'LB': 'Luas Bangunan',
+            'LT': 'Luas Tanah',
+            'KT': 'Jumlah Kamar Tidur',
+            'KM': 'Jumlah Kamar Mandi'
+        })
+        return dataset
+    except FileNotFoundError:
+        st.error("File 'DATA RUMAH.xlsx' not found. Please ensure the dataset is in the correct directory.")
+        return pd.DataFrame()
 
-    return dataset
-
-def load_header():
-    st.title("Linear Regression")
-    st.subheader("Linear Regression - Prediksi Harga Rumah")
-    st.caption("menggunakan scikit-learn, streamlit, pandas, numpy, matplotlib, seaborn")
-    st.text("Rumus linear regression : ") 
-    st.latex("y= ax + b")   
-
-@st.cache
-def train_model(dataset):
-    reg_model = linear_model.LinearRegression()
-    reg_model.fit(dataset[['Luas Bangunan','Luas Tanah','Jumlah Kamar Tidur','Jumlah Kamar Mandi']].values, dataset.Harga.values)
-
-    return reg_model
-
-def load_figure(dataset, option):
-    fig = plt.figure()
+@st.cache_resource
+def train_model(dataset: pd.DataFrame) -> LinearRegression:
+    """
+    Trains the Linear Regression model.
+    """
+    if dataset.empty:
+        return None
+        
+    X = dataset[['Luas Bangunan', 'Luas Tanah', 'Jumlah Kamar Tidur', 'Jumlah Kamar Mandi']].values
+    y = dataset['Harga'].values
     
-    if option=="Luas Bangunan":
-        sns.scatterplot(x= dataset['Luas Bangunan'], y=dataset['Harga'])
-    elif option=='Luas Tanah':
-        sns.scatterplot(x= dataset['Luas Tanah'], y= dataset['Harga'])
-    elif option=='Jumlah Kamar Tidur':
-        sns.scatterplot(x= dataset['Jumlah Kamar Tidur'], y= dataset['Harga'])
-    else:
-        sns.scatterplot(x= dataset['Jumlah Kamar Mandi'], y= dataset['Harga'])
-    
+    model = LinearRegression()
+    model.fit(X, y)
+    return model
+
+def plot_relationship(dataset: pd.DataFrame, feature: str):
+    """
+    Creates a scatter plot for the selected feature against Price.
+    """
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.scatterplot(data=dataset, x=feature, y='Harga', ax=ax, color='teal')
+    ax.set_title(f'Hubungan {feature} vs Harga', fontsize=14)
+    ax.set_ylabel('Harga (Rp)', fontsize=12)
+    ax.set_xlabel(feature, fontsize=12)
+    ax.grid(True, linestyle='--', alpha=0.6)
     return fig
 
-
-# @st.cache
-def predict(model, lb, lt, km, kt):
-    predict_value = model.predict([[lb, lt, km, kt]])
-    predict_value = predict_value.reshape(1,-1)
-    predict_price = round(predict_value[0][0],0)
-
-    return predict_price
+def predict_price(model: LinearRegression, lb: float, lt: float, kt: int, km: int) -> float:
+    """
+    Predicts the house price based on features.
+    """
+    # Feature order: LB, LT, KT, KM
+    features = [[lb, lt, kt, km]]
+    prediction = model.predict(features)[0]
+    return max(0, round(prediction, 0))
 
 def main():
-    load_header()
+    # Header
+    st.title("🏡 Linear Regression")
+    st.subheader("Prediksi Harga Rumah")
+    st.caption("Tech Stack: Scikit-learn, Streamlit, Pandas, Seaborn")
+    
+    with st.expander("Lihat Rumus"):
+        st.latex(r"y = ax + b")
+
+    # Load Data
     dataset = load_dataset()
-    st.dataframe(dataset.head(50), use_container_width=True)
-    st.info("Dataset yang ditampilkan hanya sebagian!")
-    reg_model = train_model(dataset)
+    if dataset.empty:
+        return
 
-    st.header('')
-    st.header('Grafik Hubungan Antara Variable')
-    option = st.selectbox(
-    'Tampilkan Grafik hubungan antara Harga dengan ?',
-    ('Luas Bangunan', 'Luas Tanah', 'Jumlah Kamar Tidur', 'Jumlah Kamar Mandi'))
-    st.write('Menampilkan Grafik hubungan antara Harga dengan', option)
+    # Show Data
+    st.write("### Data Preview")
+    st.dataframe(dataset.head(10), use_container_width=True)
+    st.caption(f"Total Data: {len(dataset)} baris")
+
+    # Train Model
+    model = train_model(dataset)
+
+    # Visualization Section
+    st.divider()
+    st.header("📊 Analisis Data")
     
-    fig = load_figure(dataset,option)
-    st.pyplot(fig)
-
-    st.header('')
-    st.subheader("Lakukan prediksi harga rumah")
-    lb_input = st.number_input("Masukkan Luas Bangunan (m2):", min_value=50, max_value=2000, step=10)
-    lt_input = st.number_input("Masukkan Luas Tanah (m2):", min_value=50, max_value=2000, step=10)
-    km_input = st.number_input("Masukkan Jumlah Kamar Tidur :", min_value=1, max_value=20, step=1)
-    kt_input = st.number_input("Masukkan Jumlah Kamar Mandi :", min_value=1, max_value=20, step=1)
-
-    if st.button('Hitung Harga Prediksi'):
-        predict_price = predict(reg_model, lb_input, lt_input, km_input, kt_input)
-
-        with st.spinner('Wait for it...'):
-            time.sleep(.3)
-        if (int(predict_price) <= 0):
-            st.warning("Harga rumah terlalu rendah Masukkan kategori yang benar", icon="⚠️")
-        else:
-            predict_price = format_currency(predict_price,'Rp. ', locale='en_US')
-            st.success("Prediksi harga rumah : "+str(predict_price))
-    else:
-        st.caption("Tekan Tombol untuk memprediksi")
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        feature_option = st.selectbox(
+            'Pilih Variabel:',
+            ('Luas Bangunan', 'Luas Tanah', 'Jumlah Kamar Tidur', 'Jumlah Kamar Mandi')
+        )
     
-    # testing
-main()
+    with col2:
+        fig = plot_relationship(dataset, feature_option)
+        st.pyplot(fig)
+
+    # Prediction Section
+    st.divider()
+    st.header("🔮 Prediksi Harga")
+    st.info("Masukkan parameter rumah di bawah ini:")
+
+    col_input1, col_input2 = st.columns(2)
+    
+    with col_input1:
+        lb_input = st.number_input("Luas Bangunan (m²)", min_value=20, max_value=5000, value=100, step=10)
+        lt_input = st.number_input("Luas Tanah (m²)", min_value=20, max_value=5000, value=120, step=10)
+
+    with col_input2:
+        kt_input = st.number_input("Jumlah Kamar Tidur", min_value=1, max_value=20, value=3, step=1)
+        km_input = st.number_input("Jumlah Kamar Mandi", min_value=1, max_value=20, value=2, step=1)
+
+    if st.button('Hitung Estimasi Harga', type="primary", use_container_width=True):
+        with st.spinner('Sedang menghitung...'):
+            time.sleep(0.5) # User experience delay
+            
+            estimated_price = predict_price(model, lb_input, lt_input, kt_input, km_input)
+            
+            if estimated_price <= 0:
+                st.error("Kombinasi input menghasilkan prediksi negatif atau nol. Coba sesuaikan input.")
+            else:
+                formatted_price = format_currency(estimated_price, 'Rp', locale='id_ID')
+                st.success(f"Estimasi Harga Rumah: **{formatted_price}**")
+
+if __name__ == "__main__":
+    main()
