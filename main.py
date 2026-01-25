@@ -92,5 +92,6 @@ def main():
             st.success("Prediksi harga rumah : "+str(predict_price))
     else:
         st.caption("Tekan Tombol untuk memprediksi")
-        
+    
+    # testing
 main()
