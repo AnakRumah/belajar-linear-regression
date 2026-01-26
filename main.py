@@ -1,5 +1,6 @@
 import time
 import pickle
+import os
 import pandas as pd
 import seaborn as sns
 import streamlit as st
@@ -34,19 +35,18 @@ def load_dataset() -> pd.DataFrame:
         return pd.DataFrame()
 
 @st.cache_resource
-def train_model(dataset: pd.DataFrame) -> LinearRegression:
+def load_model():
     """
-    Trains the Linear Regression model.
+    Loads the trained Linear Regression model.
     """
-    if dataset.empty:
+    model_path = os.path.join('model', 'linear_regression_model.pkl')
+    try:
+        with open(model_path, 'rb') as file:
+            model = pickle.load(file)
+        return model
+    except FileNotFoundError:
+        st.error(f"Model file not found at {model_path}. Please run train.py first.")
         return None
-        
-    X = dataset[['Luas Bangunan', 'Luas Tanah', 'Jumlah Kamar Tidur', 'Jumlah Kamar Mandi']].values
-    y = dataset['Harga'].values
-    
-    model = LinearRegression()
-    model.fit(X, y)
-    return model
 
 def plot_relationship(dataset: pd.DataFrame, feature: str):
     """
@@ -88,8 +88,10 @@ def main():
     st.dataframe(dataset.head(10), use_container_width=True)
     st.caption(f"Total Data: {len(dataset)} baris")
 
-    # Train Model
-    model = train_model(dataset)
+    # Load Model
+    model = load_model()
+    if model is None:
+        return
 
     # Visualization Section
     st.divider()
