@@ -31,8 +31,10 @@ def load_dataset() -> pd.DataFrame:
         return pd.DataFrame()
 
 @st.cache_resource
-def load_model():
-    model_path = os.path.join('model', 'linear_regression_model.pkl')
+def load_model(model_name: str):
+    slug = model_name.lower().replace(" ", "_")
+    filename = f"{slug}.pkl"
+    model_path = os.path.join('model', filename)
     try:
         with open(model_path, 'rb') as file:
             model = pickle.load(file)
@@ -61,8 +63,14 @@ def main():
     st.subheader("Prediksi Harga Rumah")
     st.caption("Tech Stack: Scikit-learn, Streamlit, Pandas, Seaborn")
 
+    # Model Selection
+    model_option = st.selectbox(
+        'Pilih Model:',
+        ('Linear Regression', 'Ridge Regression', 'Lasso Regression')
+    )
+
     # Load Model
-    model = load_model()
+    model = load_model(model_option)
     if model is None:
         return
     
@@ -73,8 +81,9 @@ def main():
         weights = lr_model.coef_
         intercept = lr_model.intercept_
 
-        print(f"Weights: {weights}")
-        print(f"Intercept: {intercept}")
+        st.write(f"**Model:** {model_option}")
+        # print(f"Weights: {weights}")
+        # print(f"Intercept: {intercept}")
         st.latex(rf"y = {weights[0]:.4f}x1 + {weights[1]:.4f}x2 + {weights[2]:.4f}x3 + {weights[3]:.4f}x4 + {intercept:.4f}")
 
     # Load Data
