@@ -66,8 +66,6 @@ def main():
     if model is None:
         return
     
-
-    
     with st.expander("Lihat Rumus"):
         st.latex(r"y = w1x1 + w2x2 + w3x3 + w4x4 + b")
         pipeline = model.regressor_
