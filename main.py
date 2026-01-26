@@ -60,9 +60,24 @@ def main():
     st.title("🏡 Linear Regression")
     st.subheader("Prediksi Harga Rumah")
     st.caption("Tech Stack: Scikit-learn, Streamlit, Pandas, Seaborn")
+
+    # Load Model
+    model = load_model()
+    if model is None:
+        return
+    
+
     
     with st.expander("Lihat Rumus"):
-        st.latex(r"y = ax + b")
+        st.latex(r"y = w1x1 + w2x2 + w3x3 + w4x4 + b")
+        pipeline = model.regressor_
+        lr_model = pipeline.named_steps['regressor']
+        weights = lr_model.coef_
+        intercept = lr_model.intercept_
+
+        print(f"Weights: {weights}")
+        print(f"Intercept: {intercept}")
+        st.latex(rf"y = {weights[0]:.4f}x1 + {weights[1]:.4f}x2 + {weights[2]:.4f}x3 + {weights[3]:.4f}x4 + {intercept:.4f}")
 
     # Load Data
     dataset = load_dataset()
@@ -74,10 +89,7 @@ def main():
     st.dataframe(dataset.head(10), use_container_width=True)
     st.caption(f"Total Data: {len(dataset)} baris")
 
-    # Load Model
-    model = load_model()
-    if model is None:
-        return
+    
 
     # Visualization Section
     st.divider()
