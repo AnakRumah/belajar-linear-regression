@@ -5,7 +5,6 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from babel.numbers import format_currency
 
 # Configuration
@@ -17,9 +16,6 @@ st.set_page_config(
 
 @st.cache_data
 def load_dataset() -> pd.DataFrame:
-    """
-    Loads and preprocesses the housing dataset.
-    """
     try:
         raw_dataset = pd.read_excel('DATA RUMAH.xlsx', usecols=['HARGA', 'LB', 'LT', 'KT', 'KM'])
         dataset = raw_dataset.rename(columns={
@@ -36,9 +32,6 @@ def load_dataset() -> pd.DataFrame:
 
 @st.cache_resource
 def load_model():
-    """
-    Loads the trained Linear Regression model.
-    """
     model_path = os.path.join('model', 'linear_regression_model.pkl')
     try:
         with open(model_path, 'rb') as file:
@@ -49,9 +42,6 @@ def load_model():
         return None
 
 def plot_relationship(dataset: pd.DataFrame, feature: str):
-    """
-    Creates a scatter plot for the selected feature against Price.
-    """
     fig, ax = plt.subplots(figsize=(8, 5))
     sns.scatterplot(data=dataset, x=feature, y='Harga', ax=ax, color='teal')
     ax.set_title(f'Hubungan {feature} vs Harga', fontsize=14)
@@ -60,12 +50,8 @@ def plot_relationship(dataset: pd.DataFrame, feature: str):
     ax.grid(True, linestyle='--', alpha=0.6)
     return fig
 
-def predict_price(model: LinearRegression, lb: float, lt: float, kt: int, km: int) -> float:
-    """
-    Predicts the house price based on features.
-    """
-    # Feature order: LB, LT, KT, KM
-    features = [[lb, lt, kt, km]]
+def predict_price(model, lb: float, lt: float, kt: int, km: int) -> float:
+    features = pd.DataFrame([[lb, lt, kt, km]], columns=['Luas Bangunan', 'Luas Tanah', 'Jumlah Kamar Tidur', 'Jumlah Kamar Mandi'])
     prediction = model.predict(features)[0]
     return max(0, round(prediction, 0))
 
@@ -125,7 +111,7 @@ def main():
 
     if st.button('Hitung Estimasi Harga', type="primary", use_container_width=True):
         with st.spinner('Sedang menghitung...'):
-            time.sleep(0.5) # User experience delay
+            time.sleep(0.1)
             
             estimated_price = predict_price(model, lb_input, lt_input, kt_input, km_input)
             
