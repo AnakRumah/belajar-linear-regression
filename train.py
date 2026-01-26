@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
+from sklearn.compose import TransformedTargetRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 
@@ -57,10 +58,15 @@ def train():
         remainder="passthrough"
     )
     
-    model = Pipeline(steps=[
+    model_pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor),
         ('regressor', LinearRegression())
     ])
+
+    model = TransformedTargetRegressor(
+        regressor=model_pipeline, 
+        transformer=StandardScaler()
+    )
     
     print("Training model...")
     model.fit(X_train, y_train)
