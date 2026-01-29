@@ -1,0 +1,40 @@
+name: 🛠 Task
+description: Pekerjaan teknis atau maintenance
+title: "[TASK] "
+labels: ["task"]
+assignees: []
+
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Tujuan Task
+      description: Apa yang harus diselesaikan?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope Pekerjaan
+      description: Batasan yang jelas.
+    validations:
+      required: true
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: Checklist
+      placeholder: |
+        - [ ] Item 1
+        - [ ] Item 2
+    validations:
+      required: false
+
+  - type: input
+    id: deadline
+    attributes:
+      label: Deadline (opsional)
+      placeholder: YYYY-MM-DD
+    validations:
+      required: false

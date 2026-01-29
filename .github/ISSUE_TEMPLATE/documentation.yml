@@ -1,0 +1,30 @@
+name: 📚 Documentation
+description: Laporkan kesalahan atau kekurangan dokumentasi
+title: "[DOCS] "
+labels: ["documentation"]
+assignees: []
+
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Lokasi Dokumentasi
+      placeholder: README.md, Wiki, URL halaman
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Masalah Dokumentasi
+      description: Apa yang salah / kurang jelas?
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Saran Perbaikan
+      description: Tulis versi yang lebih baik jika bisa.
+    validations:
+      required: false

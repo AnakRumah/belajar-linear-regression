@@ -1,0 +1,62 @@
+name: 🐞 Bug Report
+description: Laporkan bug atau perilaku tidak semestinya
+title: "[BUG] "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Isi dengan jelas. Bug tanpa langkah reproduksi akan ditutup.**
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Deskripsi Bug
+      description: Jelaskan apa yang terjadi.
+      placeholder: Bug terjadi ketika...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Langkah Reproduksi
+      description: Langkah detail untuk memunculkan bug.
+      placeholder: |
+        1. Buka ...
+        2. Klik ...
+        3. Lihat error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Perilaku yang Diharapkan
+      description: Apa yang seharusnya terjadi?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Perilaku Aktual
+      description: Apa yang benar-benar terjadi?
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, Browser, Versi aplikasi
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log / Screenshot
+      description: Tempelkan log atau bukti visual jika ada.

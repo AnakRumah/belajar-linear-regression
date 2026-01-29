@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/USERNAME/REPO/wiki
+    about: Baca dokumentasi sebelum membuka issue.
+  - name: 💬 Discussions
+    url: https://github.com/USERNAME/REPO/discussions
+    about: Gunakan Discussions untuk pertanyaan umum atau ide.
